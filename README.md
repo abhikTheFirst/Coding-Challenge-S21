@@ -22,3 +22,9 @@ Genome analysis is the identification of genomic features such as gene expressio
 **You may use any programming language you feel most comfortable. We recommend Python because it is the easiest to implement. You're allowed to use any library you want to implement this**, just document which ones you used in this README file. Try to complete this as soon as possible.
 
 Regardless if you can or cannot answer the question, provide a short explanation of how you got your solution or how you think it can be solved in your README.md file. However, we highly recommend giving the challenge a try, you just might learn something new!
+
+**Libraries**
+-CGView from UAlberta https://paulstothard.github.io/cgview/index.html 
+
+**Solution Reflection**
+I got to the solution that I believe to be true, by first understanding the mission statement, create a circular genome map with the given data. I need to know what a circular genome map, so I looked into that. After, I looked into resources/libraries that can help me generate one. Thankfully I found the CGView API for java, a language I know well and started from there. The website has example code, https://paulstothard.github.io/cgview/api_overview.html, so I implemented the second example. From there, I played with the code and changed the variables, instances, and commands to get a better grasp of how the code was creating the circular genome map. From there, I fed the data from the genome.gb file and file all the points into the generated circular genome map, thus fufilling the mission statement.
