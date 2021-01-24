@@ -6,73 +6,91 @@ import java.io.IOException;
 import java.util.*;
 
 public class CgviewTest1 implements CgviewConstants{
-    public static void main(String[] args){
-        int length = 24156;
-        Cgview cgview = new Cgview(length);
+    //This method takes in the base pairing, where it starts and stops and the feature, which is basically the strand
+    //and then outputs a specific color for each base(g-red,a-blue,c-green,t-orange) and labels the strand at the first
+    //strand
+    public static void labelStrand(String gsequence, int start, int stop, Feature feature) {
+        for(int i = start - 1; i < stop - 1; i++){
+            String base = gsequence.substring(i, i + 1);
+            FeatureRange featureRange = new FeatureRange (feature,i , i);
+            if(i != start - 1){
+                featureRange.setShowLabel(CgviewConstants.LABEL_NONE);
+            }
+            if(base.equals("g")){
+                featureRange.setColor(Color.red);
+            } else if(base.equals("a")){
+                featureRange.setColor(Color.blue);
+            }else if(base.equals("c")){
+                featureRange.setColor(Color.green);
+            }else if(base.equals("t")){
+                featureRange.setColor(Color.orange);
+            }
+        }
+    }
 
-        cgview.setWidth(1600);
-        cgview.setHeight(1600);
+    public static void main(String[] args) {
+        //Initialization data for the cgview object, such as how many bases around the backbone(2766), width and height of
+        //the png, title at the center of the map, warning labels, line thickness/length, numeric ticks around the circular genomic map,
+        //using inner labels, whether they can move outside to avoid covering each other, and width of the strand
+        int length = 2766;
+        Cgview cgview = new Cgview(length);
+        cgview.setWidth(750);
+        cgview.setHeight(750);
         cgview.setBackboneRadius(140.0f);
         cgview.setTitle("Tomato Curly Stunt Virus");
         cgview.setLabelPlacementQuality(5);
         cgview.setShowWarning(false);
-        cgview.setLabelLineLength(1.0d);
+        cgview.setLabelLineLength(20.0d);
         cgview.setLabelLineThickness(1.0f);
         cgview.setUseInnerLabels(INNER_LABELS_SHOW);
         cgview.setMoveInnerLabelsToOuter(true);
         cgview.setMinimumFeatureLength(1.0d);
 
+        //Sets the title of the circular genomic map
         Legend legend = new Legend(cgview);
         legend.setPosition(LEGEND_UPPER_CENTER);
         LegendItem legendItem = new LegendItem(legend);
-        legendItem.setLabel("Coding Challenge S21");
+        legendItem.setLabel("Coding Challenge S21  g-red, a-blue, c-green, t-orange");
         legendItem.setFont(new Font("SansSerif", Font.BOLD + Font.ITALIC, 22));
 
-        FeatureSlot directSlot0 = new FeatureSlot(cgview, DIRECT_STRAND);
-        //FeatureSlot reverseSlot0 = new FeatureSlot(cgview, REVERSE_STRAND);
+        //Slots for the features/strands to go on, which is basically the level in the circular genomic map
+        //Level 1 is outermost, level 2 is middle and level 3 is innermost
+        FeatureSlot level1 = new FeatureSlot(cgview, DIRECT_STRAND);
+        FeatureSlot level2 = new FeatureSlot(cgview, REVERSE_STRAND);
+        FeatureSlot level3 = new FeatureSlot(cgview, 3);
 
         //Features to add to the FeatureSlots
-        Feature feature0 = new Feature(directSlot0, "G");
-        feature0.setColor(Color.blue);
+        Feature C3 = new Feature(level1, "C3");
+        Feature C2 = new Feature(level2, "C2");
+        Feature C1 = new Feature(level3, "C1");
+        Feature V2 = new Feature(level2, "V2");
+        Feature V1 = new Feature(level3, "V1");
 
-        Feature feature1 = new Feature(directSlot0, "A");
-        feature1.setColor(Color.red);
-
-        Feature feature2 = new Feature(directSlot0, "T");
-        feature2.setColor(Color.green);
-
-        Feature feature3 = new Feature(directSlot0, "C");
-        feature3.setColor(Color.pink);
-
+        //Where the Genome.gb file is so we can extract the bases(so we can color each one in
         File f1 = new File("/Users/abhikkumar/Documents/GitHub/Coding-Challenge-S21/Genome.gb");
         String gsequence = null, line;
-        try{
+        try {
             FileInputStream inputStream = new FileInputStream(f1);
             Scanner scanner = new Scanner(inputStream);
             while (scanner.hasNextLine()) {
                 line = scanner.nextLine();
-                gsequence = gsequence + line + "\n";
+                gsequence = gsequence + line + "\n";//Gets the data from ORIGIN down to // at the end of the file
             }
-            gsequence = gsequence.substring(gsequence.indexOf("ORIGIN") + 6, gsequence.indexOf("//"));
-            //System.out.println(gsequence);
+            gsequence = gsequence.substring(gsequence.indexOf("ORIGIN") + 6, gsequence.indexOf("//"));//Removes ORIGIN and //
+            gsequence = gsequence.replaceAll("\\d", "");//Removes labeling digits for the strands
+            gsequence = gsequence.replaceAll("\n", "");//Removes any newline indicators
+            gsequence = gsequence.replaceAll("\\s", "");//Removes spaces
         }
-        catch(IOException e){
+        catch(IOException e) {
             e.printStackTrace();
         }
+        //Fills each strand starting the beginning base and ending base in the coding sequence.
+        labelStrand(gsequence, 139,480,V2);
+        labelStrand(gsequence,299, 1075,V1);
+        labelStrand(gsequence,1072,1476,C3);
+        labelStrand(gsequence,1217,1624,C2);
+        labelStrand(gsequence,1533,2612,C1);
 
-        for(int i = 0; i < gsequence.length() - 1; i++){
-            String base = gsequence.substring(i, i + 1);
-            int j = (int)(Math.random() * 24000) + 1;
-            if(base.equals("g")){
-                FeatureRange featureRange0 = new FeatureRange (feature0,j, j + 1);
-            }else if(base.equals("a")){
-                FeatureRange featureRange1 = new FeatureRange (feature1,j, j + 1);
-            }else if(base.equals("t")){
-                FeatureRange featureRange2 = new FeatureRange (feature2, j, j + 1);
-            } else if(base.equals("c")){
-                FeatureRange featureRange3 = new FeatureRange (feature3, j, j + 1);
-            }
-        }
         try {
             //create a PNG file
             File outputFile = new File("cgm.png");
